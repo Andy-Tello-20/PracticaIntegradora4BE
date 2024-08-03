@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
     user.save();
     const token = generateToken(user);
     res
-      .cookie("token", token, { maxAge: 1000 * 60, httpOnly: true })
+      .cookie("token", token, { maxAge: 1000 * 500, httpOnly: true })
       .redirect("/api/views/products");
   } catch (error) {
     console.log("Error en el servicio de autenticacion", error);

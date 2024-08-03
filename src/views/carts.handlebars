@@ -36,14 +36,14 @@
   onclick="pagar()">Pagar</a>
 <br>
 <br>
-<div id="resultado" style="border: 1px solid green">
-  <br>
-</div>
+
 
 
 {{/if}}
 
-
+<div id="resultado" style="border: 1px solid green">
+  <br>
+</div>
 
 <script>
   document.addEventListener('click', async function (e) {
@@ -145,6 +145,51 @@ const cargarMedios = async () => {
 
     const paymentElement = elements.create("payment", paymentElementOptions);
     paymentElement.mount("#metodospago");
+}
+
+
+const pagar = async () => {
+
+const currentUrl = window.location.href
+    // 6) confirmar pago a Stripe
+    const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+            // Make sure to change this to your payment completion page
+            return_url: currentUrl,
+        },
+    });
+
+    // This point will only be reached if there is an immediate error when
+    // confirming the payment. Otherwise, your customer will be redirected to
+    // your `return_url`. For some payment methods like iDEAL, your customer will
+    // be redirected to an intermediate site first to authorize the payment, then
+    // redirected to the `return_url`.
+    console.log(error.message)
+    document.getElementById("resultado").textContent = error.message
+    // if (error.type === "card_error" || error.type === "validation_error") {
+    //     showMessage(error.message);
+    // } else {
+    //     showMessage("An unexpected error occurred.");
+    // }
+
+}
+
+
+const verResultado=async(clientSecret)=>{
+    // 7) recupero info del pago concretado con data de query params
+    const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+    alert(`Estado de la Compra: ${paymentIntent.status}`)
+    document.getElementById("resultado").textContent=`Estado de la Compra: ${paymentIntent.status}`
+}
+
+// se ejecuta siempre...
+const clientSecret = new URLSearchParams(window.location.search).get(
+    "payment_intent_client_secret"
+);
+
+if (clientSecret) {
+    verResultado(clientSecret)
 }
 
 </script>
