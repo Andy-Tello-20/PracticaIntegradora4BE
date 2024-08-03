@@ -9,9 +9,8 @@
       <p />
     <p>Price: {{this.product.price}}</p>
     <p>Code: {{this.product.code}}</p>
-    <p>Stock: {{this.product.stock}}</p>
     <p>Cantidad: {{this.quantity}}</p>
-    <p>Categoría: {{this.product.category}}</p>
+    
   </li>
 </ul>
 {{else}}
@@ -22,6 +21,7 @@
 <a href="/api/views/products">Ir al menú de productos</a>
 <br>
 <br>
+<h2 id="importe">Total: $ {{totalSum}}</h2>
 {{#if cart.products}}
 <button class="purchase" data-id="{{cart._id}}" data-email="{{email}}" data-products="{{serializedProducts}}">Finalizar
   compra</button>

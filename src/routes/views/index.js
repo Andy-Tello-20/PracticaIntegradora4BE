@@ -46,10 +46,20 @@ router.get("/carts/:cid", authMiddleware("jwt"), async (req, res) => {
     const { cid } = req.params;
     let cart = await cartManager.getCartById(cid);
     let serializedProducts = JSON.stringify(cart?.products || []);
+
+   
+    const totalSum = cart.products.reduce((accumulator, item) => {
+      return accumulator + (item.quantity * item.product.price);
+    }, 0);
+    
+
+
     res.render("carts", {
       cart: cart?.toJSON() || [],
       email: req.user.email,
       serializedProducts,
+      totalSum,
+
     });
   } catch (error) {
     console.log(error);

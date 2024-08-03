@@ -37,6 +37,9 @@ export default class CarstDAO {
   async increaseQuantityOfProduct(cart, pid) {
     try {
       cart.products[pid].quantity++;
+
+      // console.log('cart.products[pid].quantity++ es: ',cart.products[pid].quantity)
+
       await cart.save();
       return true;
     } catch (error) {

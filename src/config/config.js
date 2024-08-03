@@ -1,8 +1,17 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+dotenv.config(
+
+  {
+      path:"./src/.env",
+      override: true
+
+  }
+)
+
 export default {
-  DB_URL: process.env.DB_URL,
+  DB_URL: process.env.MONGODB_URI,
   CLIENTID_GITHUB: process.env.CLIENTID_GITHUB,
   CLIENTSECRET_GITHUB: process.env.CLIENTSECRET_GITHUB,
   CALLBACKURL_GITHUB: process.env.CALLBACKURL_GITHUB,
