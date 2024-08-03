@@ -10,7 +10,7 @@
     <p>Price: {{this.product.price}}</p>
     <p>Code: {{this.product.code}}</p>
     <p>Cantidad: {{this.quantity}}</p>
-    
+
   </li>
 </ul>
 {{else}}
@@ -21,11 +21,29 @@
 <a href="/api/views/products">Ir al menú de productos</a>
 <br>
 <br>
-<h2 id="importe">Total: $ {{totalSum}}</h2>
+
+<span>Total: $</span>
+<h2 id="importe">{{totalSum}}</h2>
+<button id="cMedios" href="#" >Confirmar Compra</button>
+
 {{#if cart.products}}
-<button class="purchase" data-id="{{cart._id}}" data-email="{{email}}" data-products="{{serializedProducts}}">Finalizar
-  compra</button>
+
+<div id="metodospago" style="border: 1px solid blue">
+  <br>
+</div>
+<br>
+<a class="purchase" data-id="{{cart._id}}" data-email="{{email}}" data-products="{{serializedProducts}}" href="#"
+  onclick="pagar()">Pagar</a>
+<br>
+<br>
+<div id="resultado" style="border: 1px solid green">
+  <br>
+</div>
+
+
 {{/if}}
+
+
 
 <script>
   document.addEventListener('click', async function (e) {
@@ -54,7 +72,7 @@
                 body: JSON.stringify({ products: res.productsNotPurchased }),
               });
 
-              if (res?.tickets.length > 0) { alert(`Sus productos: '${res.tickets.map(p => p.product)}' han sido comprados. Sus tickets son: '${res.tickets.map(p => p.idTicket)}'`); }
+              if (res?.tickets.length > 0) { alert(`Finalizando Pedido`); }
             } else if (res.data) {
               for (let p of res.data) {
                 await fetch(`/api/carts/${cartId}/products/${p.idProduct}`, {
@@ -62,9 +80,9 @@
                   headers: { "Content-Type": "application/json" },
                 });
               }
-              alert(`Sus productos: '${res.data.map(p => p.product)}' han sido comprados. Sus tickets son: '${res.data.map(p => p.idTicket)}'`);
+              alert(`Finalizando Pedido`);
             }
-            window.location.reload();
+            //window.location.href = "/api/views/payment/";
           } else {
             throw new Error('Algo salió mal');
           }
@@ -74,4 +92,59 @@
       }
     }
   });
+</script>
+
+
+<script>
+  const stripe = Stripe("pk_test_51PddhERu5oi1L0NTKwwgMODPHCwKfhilL5CVXXA0HzZTcuuNhKnw3QNiegO4O5N0SoDPrL7jttLJzLVfEliTWZ5Q00EsMjKPD5");
+     
+
+let medios=document.getElementById('cMedios')
+
+medios.addEventListener('click', () => {
+
+cargarMedios() 
+})
+
+const cargarMedios = async () => {
+
+    let importe = document.getElementById("importe")
+
+
+
+    importe = parseFloat(importe.textContent)
+
+  console.log('importe es:', importe)
+
+    if (importe < 1 || isNaN(importe)) {
+        alert("Monto erroneo")
+        return
+    }
+    importe = importe * 100
+
+
+    // 2) realizo petición al back, pidiendo un payment-intent
+
+    const response = await fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ importe }),
+    });
+    const { clientSecret } = await response.json();
+    console.log(clientSecret)
+
+    // 5) generar elementos de pago y asociar div de nuestro html al llamar a .mount
+    const appearance = {
+        theme: 'stripe',
+    };
+    elements = stripe.elements({ appearance, clientSecret });
+
+    const paymentElementOptions = {
+        layout: "tabs",
+    };
+
+    const paymentElement = elements.create("payment", paymentElementOptions);
+    paymentElement.mount("#metodospago");
+}
+
 </script>

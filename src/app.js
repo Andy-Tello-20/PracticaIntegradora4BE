@@ -11,6 +11,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUiExpress from "swagger-ui-express";
 import __dirname from "./dirname.js";
 import router from "./routes/index.js";
+import paymentRoute from "./routes/payment.js"
 import MessageManager from "./dao/db/messages/index.js";
 import { passportStrategy } from "./config/passport.js";
 import config from "./config/config.js";
@@ -70,7 +71,7 @@ app.get("/", async (req, res) => {
     res.status(500).send({ message: error });
   }
 });
-app.use("/api", router);
+app.use("/api", router,paymentRoute);
 //app.get("/", (req, res) => {
 //  logger.info("Welcome to the API");
 //  return res.send({ message: "Welcome to the API" });

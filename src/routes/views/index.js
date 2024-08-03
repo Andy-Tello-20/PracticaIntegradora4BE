@@ -67,6 +67,10 @@ router.get("/carts/:cid", authMiddleware("jwt"), async (req, res) => {
   }
 });
 
+router.get("/payment",authMiddleware("jwt"), (req,res)=>{
+  res.render("payment",{})
+})
+
 router.get(
   "/profile",
   authMiddleware("jwt"),
